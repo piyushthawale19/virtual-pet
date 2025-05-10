@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Virtual Pet Simulator</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #e9f5f9;
+    }
+    .pet-info, .pet-status {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .nav-link {
+      cursor: pointer;
+    }
+    .status-bar {
+      height: 20px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-primary">
+    <div class="container-fluid">
+      <a class="navbar-brand text-white" href="#">Virtual Pet Simulator</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item"><a class="nav-link text-white" id="home-link">Home</a></li>
+          <li class="nav-item"><a class="nav-link text-white" id="feed-link">Feed</a></li>
+          <li class="nav-item"><a class="nav-link text-white" id="play-link">Play</a></li>
+          <li class="nav-item"><a class="nav-link text-white" id="sleep-link">Sleep</a></li>
+          <li class="nav-item"><a class="nav-link text-white" id="status-link">Status</a></li>
+        </ul>
+        <button class="btn btn-outline-light" id="reset-button">Reset</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div id="home-page" class="pet-info">
+      <h2>Welcome to Virtual Pet Simulator!</h2>
+      <p>This is your virtual pet, take care of it and have fun!</p>
+    </div>
+
+    <div id="feed-page" class="pet-info" style="display: none;">
+      <h2>Feed Your Pet</h2>
+      <p>Your pet is hungry, feed it to make it happy!</p>
+      <button id="feed-button" class="btn btn-success">Feed</button>
+    </div>
+
+    <div id="play-page" class="pet-info" style="display: none;">
+      <h2>Play with Your Pet</h2>
+      <p>Play with your pet to make it happy!</p>
+      <button id="play-button" class="btn btn-warning">Play</button>
+    </div>
+
+    <div id="sleep-page" class="pet-info" style="display: none;">
+      <h2>Put Your Pet to Sleep</h2>
+      <p>Your pet is tired, put it to sleep to regain energy!</p>
+      <button id="sleep-button" class="btn btn-secondary">Sleep</button>
+    </div>
+
+    <div id="status-page" class="pet-status" style="display: none;">
+      <h2>Pet Status</h2>
+      <label>Hunger</label>
+      <div class="progress status-bar">
+        <div class="progress-bar bg-danger" role="progressbar" id="hunger-status" style="width: 50%">50</div>
+      </div>
+      <label>Happiness</label>
+      <div class="progress status-bar">
+        <div class="progress-bar bg-success" role="progressbar" id="happiness-status" style="width: 50%">50</div>
+      </div>
+      <label>Energy</label>
+      <div class="progress status-bar">
+        <div class="progress-bar bg-info" role="progressbar" id="energy-status" style="width: 50%">50</div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="message-modal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body">
+            <p id="modal-message"></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- JS Logic -->
+  <script>
+    let hunger = 50;
+    let happiness = 50;
+    let energy = 50;
+
+    const pages = ['home', 'feed', 'play', 'sleep', 'status'];
+    const modal = new bootstrap.Modal(document.getElementById('message-modal'));
+    const modalMessage = document.getElementById('modal-message');
+
+    function showPage(target) {
+      pages.forEach(p => document.getElementById(`${p}-page`).style.display = (p === target ? 'block' : 'none'));
+    }
+
+    function updateStatusBars() {
+      document.getElementById('hunger-status').style.width = hunger + '%';
+      document.getElementById('hunger-status').textContent = hunger;
+
+      document.getElementById('happiness-status').style.width = happiness + '%';
+      document.getElementById('happiness-status').textContent = happiness;
+
+      document.getElementById('energy-status').style.width = energy + '%';
+      document.getElementById('energy-status').textContent = energy;
+    }
+
+    function showModal(msg) {
+      modalMessage.textContent = msg;
+      modal.show();
+    }
+
+    document.getElementById('home-link').onclick = () => showPage('home');
+    document.getElementById('feed-link').onclick = () => showPage('feed');
+    document.getElementById('play-link').onclick = () => showPage('play');
+    document.getElementById('sleep-link').onclick = () => showPage('sleep');
+    document.getElementById('status-link').onclick = () => {
+      showPage('status');
+      updateStatusBars();
+    };
+
+    document.getElementById('feed-button').onclick = () => {
+      hunger = Math.max(0, hunger - 15);
+      happiness = Math.min(100, happiness + 10);
+      energy = Math.min(100, energy + 5);
+      showModal('You fed your pet!');
+    };
+
+    document.getElementById('play-button').onclick = () => {
+      happiness = Math.min(100, happiness + 15);
+      energy = Math.max(0, energy - 10);
+      showModal('You played with your pet!');
+    };
+
+    document.getElementById('sleep-button').onclick = () => {
+      energy = Math.min(100, energy + 20);
+      showModal('Your pet had a nice rest!');
+    };
+
+    document.getElementById('reset-button').onclick = () => {
+      hunger = 50;
+      happiness = 50;
+      energy = 50;
+      showModal('Pet status has been reset.');
+    };
+  </script>
+</body>
+</html>
